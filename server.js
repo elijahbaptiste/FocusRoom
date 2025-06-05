@@ -1,11 +1,11 @@
-const express = require('express');
+const express = require("express");
 const app = express();
+//import Webcam from "webcam-easy";
 
-app.set('view engine', 'ejs');
+app.set("view engine", "ejs");
 
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
+  res.render("Welcome");
+});
 
-    res.render("Welcome");
-})
-
-app.listen(process.env.PORT || 5000); 
+app.listen(process.env.PORT || 5000);
