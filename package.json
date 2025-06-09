@@ -1,0 +1,27 @@
+{
+  "name": "focusroom",
+  "version": "1.0.0",
+  "description": "",
+  "main": "JS files/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elijahbaptiste/FocusRoom.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/elijahbaptiste/FocusRoom/issues"
+  },
+  "homepage": "https://github.com/elijahbaptiste/FocusRoom#readme",
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "mysql": "^2.18.1",
+    "nodemon": "^3.1.10"
+  }
+}
