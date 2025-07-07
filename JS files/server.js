@@ -5,7 +5,7 @@ const dotenv = require('dotenv').config();
 const path = require('path');
 
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, '..'));
+app.set('views', path.join(__dirname, '../Views'));
 
 
 // // Using environment variables for database connection
@@ -23,7 +23,23 @@ app.set('views', path.join(__dirname, '..'));
 
 
 app.get('/', (req, res) => {
-  res.render('WelcomPage.ejs')
+  res.render('WelcomePage.ejs')
+});
+
+app.get('/login', (req, res) => {
+  res.render('Login.ejs')
+});
+
+app.get('/register', (req, res) => {
+  res.render('Signup.ejs')
+});
+
+app.get('/dashboard', (req, res) => {
+  res.render('UserDashboard.ejs')
+});
+
+app.get('/main', (req, res) => {
+  res.render('MainListeningPage.ejs')
 });
 
 
