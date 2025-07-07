@@ -54,17 +54,24 @@ app.post('/login', (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
   console.log(`Username: ${username}, Password: ${password}`);
+
+
+
+  
   res.redirect('/dashboard');
 });
 
 app.post('/signup', (req, res) => {
-
   // Handle registration logic here
  const username = req.body.username;
   const password = req.body.password;
   const email = req.body.email;
   const spotifyUsername = req.body.spotifyUsername;
   console.log(`Username: ${username}, Password: ${password}`);
+
+
+
+
   res.redirect('/login');
 });
 
