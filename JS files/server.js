@@ -1,4 +1,4 @@
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const express = require('express');
 const app = express();
 const dotenv = require('dotenv').config();
@@ -9,17 +9,23 @@ app.set('views', path.join(__dirname, '../Views'));
 
 
 // // Using environment variables for database connection
-// var connection = mysql.createConnection({
-//     host:  process.env.DATABASE_HOST,
-//     user:  process.env.DATABASE_USER,
-//     password:  process.env.DATABASE_PASSWORD,
-//     database: 'FocusRoom'
-// });
+var connection = mysql.createConnection({
+    host:  process.env.DATABASE_HOST,
+    user:  process.env.DATABASE_USERNAME,
+    password:  process.env.DATABASE_PASSWORD,
+    database: 'FocusRoom'
+});
 
-// connection.connect((err) => {
-//   if (err) throw err;
-//   console.log('Connected to the MySQL database!');
-// }); 
+connection.connect((err) => {
+  if (err) {
+    console.error('Error connecting to the MySQL database:', err.stack);
+    console.log('process.env.DATABASE_HOST:', process.env.DATABASE_HOST);
+    console.log('process.env.DATABASE_USER:', process.env.DATABASE_USERNAME);
+    throw err;
+  }
+  console.log('Connected to the MySQL database!');
+
+}); 
 
 
 app.get('/', (req, res) => {
