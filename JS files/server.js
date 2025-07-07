@@ -32,9 +32,34 @@ connection.connect((err) => {
 const AddUser = 'INSERT INTO users (Username, password, email, SpotifyUserID) VALUES (?, ?, ?, ?)';
 const FindUser = 'SELECT * FROM users WHERE Username = ?';
 
+// Spotfiy API function setup. Code based on the Spotify API documentation found here : https://developer.spotify.com/documentation/web-api/tutorials/code-pkce-flow
+// const generateRandomString = (length) => {
+//   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+//   const values = crypto.getRandomValues(new Uint8Array(length));
+//   return values.reduce((acc, x) => acc + possible[x % possible.length], "");
+// }
+
+// const state  = generateRandomString(64);
+
+// const SpotfiyAuthorize = (req, res) => {
+
+//   res.redirect('https://accounts.spotify.com/authorize?' +
+//     querystring.stringify({
+//       response_type: 'code',
+//       client_id: process.env.SPOTIFY_CLIENT_ID,
+//       scope: 'user-read-private user-read-email',
+//       redirect_uri: redirect_uri,
+//       state: state
+//     }));
+  
+//   return window.crypto.subtle.digest('SHA-256', data)
+// }
+
+
 
 app.get('/', (req, res) => {
   res.render('WelcomePage.ejs')
+
 });
 
 app.get('/login', (req, res) => {
@@ -46,6 +71,7 @@ app.get('/register', (req, res) => {
 });
 
 app.get('/dashboard', (req, res) => {
+  //SpotfiyAuthorize(req, res);
   res.render('UserDashboard.ejs')
 });
 
