@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const dotenv = require('dotenv').config();
 const path = require('path');
+const bcrypt = require('bcrypt');
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '../Views'));
@@ -11,10 +12,10 @@ app.use(express.urlencoded({ extended: false }));
 
 // // Using environment variables for database connection
 var connection = mysql.createConnection({
-    host:  process.env.DATABASE_HOST,
-    user:  process.env.DATABASE_USERNAME,
-    password:  process.env.DATABASE_PASSWORD,
-    database: 'FocusRoom'
+  host: process.env.DATABASE_HOST,
+  user: process.env.DATABASE_USERNAME,
+  password: process.env.DATABASE_PASSWORD,
+  database: 'FocusRoom'
 });
 
 connection.connect((err) => {
@@ -26,7 +27,10 @@ connection.connect((err) => {
   }
   console.log('Connected to the MySQL database!');
 
-}); 
+});
+
+const AddUser = 'INSERT INTO users (Username, password, email, SpotifyUserID) VALUES (?, ?, ?, ?)';
+const FindUser = 'SELECT * FROM users WHERE Username = ?';
 
 
 app.get('/', (req, res) => {
@@ -56,32 +60,75 @@ app.post('/login', (req, res) => {
   console.log(`Username: ${username}, Password: ${password}`);
 
 
+  connection.query(FindUser, [username], (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      return res.status(500).send('Internal Server Error');
+    }
 
-  
-  res.redirect('/dashboard');
+    if (results.length > 0) {
+      console.log('User found:', results[0]);
+      // User exists, proceed to dashboard
+      bcrypt.compare(password, results[0].password, (err, isMatch) => {
+        if (err) {
+          console.error('Error comparing passwords:', err);
+          return res.status(500).send('Internal Server Error');
+        }
+        if (!isMatch) {
+          console.log('Password does not match.');
+          return res.redirect('/login');
+        }
+        console.log('Password matches, redirecting to dashboard.');
+        return res.redirect('/dashboard');
+      });
+    } else {
+      console.log('No user found with the provided credentials.');
+      // User not found, redirect to login with an error message
+      return res.redirect('/login');
+    }
+  });
 });
 
-app.post('/signup', (req, res) => {
+app.post('/signup', async (req, res) => {
   // Handle registration logic here
- const username = req.body.username;
+  const username = req.body.username;
   const password = req.body.password;
   const email = req.body.email;
-  const spotifyUsername = req.body.spotifyUsername;
+  const spotifyUsername = req.body.SpotifyUsername;
   console.log(`Username: ${username}, Password: ${password}`);
+  console.log(`Email: ${email}, Spotify Username: ${spotifyUsername}`);
 
+  connection.query(FindUser, [username], (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      return res.status(500).send('Internal Server Error');
+    }
+    if (results.length > 0) {
+      console.log('User found:', results[0]);
+      // User exists
+      console.log('User already exists, redirecting to login.');
+      return res.redirect('/login');
+    }
+  });
 
+  bcrypt.hash(password, 10, (err, hashedPassword) => {
+    if (err) {
+      console.error('Error hashing password:', err);
+      return res.status(500).send('Internal Server Error');
+    }
 
-
-  res.redirect('/login');
+    connection.query(AddUser, [username, hashedPassword, email, spotifyUsername], (error, results) => {
+      if (error) {
+        console.error('Error executing query:', error);
+        return res.status(500).send('Internal Server Error');
+      }
+      console.log('User registered successfully:', results);
+      // User registered successfully, redirect to login
+      return res.redirect('/login');
+    });
+  });
 });
 
-//example prepared statement for querying the database
-// const sqlQuery = 'SELECT * FROM users WHERE id = ?';
-// connection.query(sqlQuery, [1], (error, results) => {
-//   if (error) throw error;
-//   console.log('The solution is: ', results[0].solution);
-// });
- 
 // connection.end();
 
 app.listen(3000);
