@@ -6,6 +6,7 @@ const path = require('path');
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '../Views'));
+app.use(express.urlencoded({ extended: false }));
 
 
 // // Using environment variables for database connection
@@ -48,7 +49,24 @@ app.get('/main', (req, res) => {
   res.render('MainListeningPage.ejs')
 });
 
+app.post('/login', (req, res) => {
+  // Handle login logic here
+  const username = req.body.username;
+  const password = req.body.password;
+  console.log(`Username: ${username}, Password: ${password}`);
+  res.redirect('/dashboard');
+});
 
+app.post('/signup', (req, res) => {
+
+  // Handle registration logic here
+ const username = req.body.username;
+  const password = req.body.password;
+  const email = req.body.email;
+  const spotifyUsername = req.body.spotifyUsername;
+  console.log(`Username: ${username}, Password: ${password}`);
+  res.redirect('/login');
+});
 
 //example prepared statement for querying the database
 // const sqlQuery = 'SELECT * FROM users WHERE id = ?';
