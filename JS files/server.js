@@ -6,6 +6,7 @@ const path = require('path');
 const bcrypt = require('bcrypt');
 
 app.set('view engine', 'ejs');
+app.use('/Styles', express.static(path.join(__dirname, '../Styles')));
 app.set('views', path.join(__dirname, '../Views'));
 app.use(express.urlencoded({ extended: false }));
 
