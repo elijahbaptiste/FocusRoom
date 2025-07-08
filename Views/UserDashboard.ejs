@@ -12,7 +12,8 @@
 
     <h1>Welcome to the User Dashboard</h1>
     <p>This is the user dashboard where you can manage your account and preferences.</p>
-    <button id="spotify-login-btn">Login with Spotify</button>
+    <button id="spotify-login-btn" style="display: none;">Login with Spotify</button>
+    <button id="start-session-btn" style="display: none;"><a href="/main">Start A Session</a></button>
 
     <h1>Your Profile</h1>
     <span id="avatar"></span>
@@ -22,7 +23,7 @@
 
 </body>
 <script type="module">
-    const clientId = "<%= process.env.SPOTIFY_CLIENT_ID %>";  // You can also hardcode it here if needed
+    const clientId = "<%= process.env.SPOTIFY_CLIENT_ID %>";
     const redirectUri = "http://127.0.0.1:3000/callback";
 
     async function redirectToAuthCodeFlow() {
@@ -64,8 +65,11 @@
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
     if (!code) {
+        document.getElementById("spotify-login-btn").style.display = "block";
         document.getElementById("spotify-login-btn").addEventListener("click", redirectToAuthCodeFlow);
     } else {
+        document.getElementById("spotify-login-btn").style.display = "none";
+        document.getElementById("start-session-btn").style.display = "block";
         getAccessToken(code).then(token => {
             fetchProfile(token).then(profile => {
                 populateUI(profile);
