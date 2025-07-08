@@ -154,7 +154,6 @@ app.get('/main', (req, res) => {
   res.render('MainListeningPage.ejs')
 });
 app.get('/callback', (req, res) => {
-  res.send('Callback reached');
   res.render('UserDashboard.ejs');
 });
 
