@@ -16,11 +16,8 @@
     <button id="start-session-btn" style="display: none;"><a href="/main">Start A Session</a></button>
 
     <h1>Your Profile</h1>
-    <span id="avatar"></span>
-    <span id="Spotify Username">%= user.username %></span>
-
-
-
+    <img id="avatar" alt="Default Profile Icon by Vecteezy" src="../Assets/20171206_01.jpg"></img>
+    <h4 id="Spotify Username">%= user.username %></h4>
 </body>
 <script type="module">
     const clientId = "<%= process.env.SPOTIFY_CLIENT_ID %>";
@@ -105,11 +102,11 @@
     }
 
     function populateUI(profile) {
-        document.getElementById("spotify-username").innerText = profile.display_name;
+        document.getElementById("Spotify Username").innerText = profile.display_name;
         if (profile.images && profile.images.length > 0) {
             const profileImage = new Image(200, 200);
             profileImage.src = profile.images[0].url;
-            document.getElementById("avatar").appendChild(profileImage);
+            document.getElementById("avatar").src = profileImage.src;
         }
     }
 </script>
