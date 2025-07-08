@@ -1,15 +1,39 @@
 * {
+  background-image: url('../Assets/BackgroundImage.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  display: flexbox;
+  flex-direction: row-reverse;
+  z-index: 0;
 }
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #ece9e6, #ffffff);
+  background: linear-gradient(135deg, #E07A5F, #F0C808);
+
   color: #333;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
+}
+
+.header-div {
+  text-align: center;
+  color: #fff;
+  background: linear-gradient(0deg, #56A3A6, #07A0C3);
+  width: 100%;
+  height: 100px;
+  z-index: 1;
+}
+
+.main-body-div {
+  text-align: center;
+  background: linear-gradient(180deg, #07A0C3, #086788);
+  z-index: 0;
+  justify-self: center;
 }

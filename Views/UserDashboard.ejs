@@ -98,6 +98,7 @@
         const result = await fetch("https://api.spotify.com/v1/me", {
             headers: { Authorization: `Bearer ${token}` }
         });
+        console.log(result);
         return await result.json();
     }
 
