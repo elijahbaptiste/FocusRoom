@@ -4,10 +4,13 @@
     bottom: 0;
     width: 100%;
     color: rgb(0, 0, 0);
+      border: 5px solid rgba(70, 16, 16, 0.5);
     text-align: center;
     display: flex;
     flex-direction: row;
     justify-content: center;
+    align-items: center;
+    z-index: 0;
 }
 
 .SpotifyLogo {
@@ -15,6 +18,28 @@
 }
 
 .logo {
-    width: 5vw;
-    height: 10vh;
+    width: 140px;
+    height: 40px;
+    margin : 10px;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+.camera-indicator {
+    width: 640px;
+    height: 180px;
+    border: 5px solid rgba(70, 16, 16, 0.5);
+    z-index: 1000;
+}
+
+.camera-window {
+    width: 640px;
+    height: 480px;
+    border: 5px solid rgba(0, 0, 0, 0.5);
+    z-index: 1000;
 }

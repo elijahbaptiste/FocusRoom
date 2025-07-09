@@ -10,12 +10,60 @@
 
 <body>
 
-    <h1>Welcome to the listening page</h1>
 
-    <div class="footer">
-        <p>Powered By</p>
-        <img class="logo" src="../Assets/Spotify_Full_Logo_RGB_Green.png" href="https://open.spotify.com/"/>
+    <div class="main-container">
+        <h1 class="title">Welcome to the listening page</h1>
+        <div class="camera-indicator">
+            <p>This is where the eyeball gif will go</p>
+        </div>
+        <div class="camera-window">
+            <!-- //<canvas id="webcam-canvas" width="640" height="480"></canvas> -->
+            <video id="webcam" autoplay playsinline width: 640px; height: 480px; border: 2px solid #555; border-radius:
+                8px;></video>
+            <p>This is where the camera window will go</p>
+        </div>
+
+        <div class="footer">
+            <h3>Powered By </h3>
+            <img class="logo" src="../Assets/Spotify_Full_Logo_RGB_Green.png" href="https://open.spotify.com/" />
+        </div>
     </div>
+
+
+    <script>
+        const video = document.getElementById('webcam');
+
+        async function startWebcam() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+            } catch (err) {
+                console.error('Error accessing webcam:', err);
+            }
+        }
+
+        function captureFrameAndSend() {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob((blob) => {
+                const formData = new FormData();
+                formData.append('frame', blob, 'frame.png');
+                fetch('/upload-frame', {
+                    method: 'POST',
+                    body: formData
+                }).then(res => console.log('Frame sent:', res.status))
+                    .catch(err => console.error('Error sending frame:', err));
+            }, 'image/png');
+        }
+
+        startWebcam();
+
+        // Capture and send frame every 2 seconds
+        setInterval(captureFrameAndSend, 2000);
+    </script>
 
 </body>
 

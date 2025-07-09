@@ -1,33 +1,43 @@
 * {
-  background-image: url('../Assets/BackgroundImage.png');
+  background-image: url('/Assets/pexels-tima-miroshnichenko-9572550.jpg');
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: 100%;
   background-position: center;
+  background-attachment: fixed;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  display: flexbox;
   flex-direction: row-reverse;
-  z-index: 0;
+  z-index: 2;
 }
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #E07A5F, #F0C808);
-
-  color: #333;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
+  z-index: 1;
 }
 
 .header-div {
-  text-align: center;
+  display: flex;
+  flex-direction: row;
   color: #fff;
   background: linear-gradient(0deg, #56A3A6, #07A0C3);
   width: 100%;
   height: 100px;
+  z-index: 1;
+}
+
+.main-container {
+  display: flex;
+  height: 1000px;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 80%;
+  margin: auto;
   z-index: 1;
 }
 
@@ -36,4 +46,13 @@ body {
   background: linear-gradient(180deg, #07A0C3, #086788);
   z-index: 0;
   justify-self: center;
+}
+
+.user-avater{
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 5px solid #fff;
+  margin-top: -75px; /* Half of the height to center it */
+  z-index: 1;
 }
