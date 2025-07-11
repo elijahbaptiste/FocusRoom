@@ -12,12 +12,14 @@
 
     <h1>Welcome to the User Dashboard</h1>
     <p>This is the user dashboard where you can manage your account and preferences.</p>
+    <h1>Your Profile</h1>
+    <img class="user-avatar" id="avatar" alt="Default Profile Icon by Vecteezy" src="../Assets/20171206_01.jpg"
+        width="100px" height="100px"></img>
+    <h4 id="Spotify Username">%= user.username %></h4>
     <button id="spotify-login-btn" style="display: none;">Login with Spotify</button>
     <button id="start-session-btn" style="display: none;"><a href="/main">Start A Session</a></button>
 
-    <h1>Your Profile</h1>
-    <img class="user-avatar" id="avatar" alt="Default Profile Icon by Vecteezy" src="../Assets/20171206_01.jpg" width="100px" height="100px"></img>
-    <h4 id="Spotify Username">%= user.username %></h4>
+
 </body>
 <script type="module">
     const clientId = "<%= process.env.SPOTIFY_CLIENT_ID %>";
@@ -111,4 +113,5 @@
         }
     }
 </script>
+
 </html>

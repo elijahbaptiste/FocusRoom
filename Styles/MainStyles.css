@@ -1,19 +1,14 @@
 * {
-  background-image: url('/Assets/pexels-tima-miroshnichenko-9572550.jpg');
-  background-repeat: no-repeat;
-  background-size: 100%;
-  background-position: center;
-  background-attachment: fixed;
   margin: 0;
   padding: 0;
+  border: 0;
   box-sizing: border-box;
-  flex-direction: row-reverse;
-  z-index: 2;
 }
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100vh;
@@ -48,11 +43,50 @@ body {
   justify-self: center;
 }
 
-.user-avater{
+.user-avater {
   width: 150px;
   height: 150px;
   border-radius: 50%;
   border: 5px solid #fff;
-  margin-top: -75px; /* Half of the height to center it */
+  margin-top: -75px;
   z-index: 1;
+}
+
+.form-container {
+  height: 500px;
+  width: 400px;
+  z-index: 1;
+  background-color: rgb(251, 14, 14);
+  display: flex;
+  margin: auto;
+  padding: 20px;
+  border-radius: 12px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+button {
+  background-color: rgb(194, 20, 20);
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: auto;
+  border-radius: 12px;
+  border: none;
+  width: 30%;
+}
+
+input {
+  width: 30%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border: 2px solid gray;
+  border-radius: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

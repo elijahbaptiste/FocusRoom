@@ -1,10 +1,16 @@
+body{
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(70, 16, 16, 0.5));
+    z-index: -1;
+}
+
+
 .footer {
     position: fixed;
     left: 0;
     bottom: 0;
     width: 100%;
     color: rgb(0, 0, 0);
-      border: 5px solid rgba(70, 16, 16, 0.5);
+    border: 5px solid rgba(70, 16, 16, 0.5);
     text-align: center;
     display: flex;
     flex-direction: row;
@@ -15,12 +21,13 @@
 
 .SpotifyLogo {
     float: right;
+    background: none;
 }
 
 .logo {
     width: 140px;
     height: 40px;
-    margin : 10px;
+    margin: 10px;
 }
 
 .main-container {
@@ -30,6 +37,7 @@
     justify-content: center;
     height: 100%;
 }
+
 .camera-indicator {
     width: 640px;
     height: 180px;
