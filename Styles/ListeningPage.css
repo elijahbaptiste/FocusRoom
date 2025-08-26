@@ -1,22 +1,59 @@
-body{
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(70, 16, 16, 0.5));
-    z-index: -1;
+/* === Fonts === */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Grotesk:wght@400;600&display=swap");
+
+:root {
+    --bg-1: #a1cca5;
+    --bg-2: #8fb996;
+    --bg-3: #709775;
+    --card: #415D43;
+    --card-strong: #111d13;
+    --border: rgba(255, 255, 255, 0.12);
+    --text-1: #2a3d45;
+    --text-2: #bcac9b;
+    --accent: #7c5cff;
+    --radius: 16px;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+:root {
+    color-scheme: dark;
+}
+
+* {
+    transition: color 0.2s ease, background-color 0.2s ease,
+        border-color 0.2s ease, transform 0.25s ease;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    font-family: Inter, "Segoe UI", system-ui, -apple-system, Roboto, Arial,
+        sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    color: var(--text-1);
+    background: radial-gradient(1200px 600px at 20% -10%,
+            rgba(124, 92, 255, 0.16),
+            transparent 60%),
+        linear-gradient(180deg, var(--bg-1), var(--bg-2) 55%, var(--bg-3));
+    background-attachment: fixed;
 }
 
 
 .footer {
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    color: rgb(0, 0, 0);
-    border: 5px solid rgba(70, 16, 16, 0.5);
-    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 50;
     display: flex;
-    flex-direction: row;
-    justify-content: center;
     align-items: center;
-    z-index: 0;
+    justify-content: center;
+    width: min(1120px, 100% - 32px);
+    margin: 16px auto 0;
+    padding: 10px 14px;
 }
 
 .SpotifyLogo {
@@ -31,23 +68,40 @@ body{
 }
 
 .main-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
+      display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 100%;
 }
 
 .camera-indicator {
-    width: 640px;
-    height: 180px;
-    border: 5px solid rgba(70, 16, 16, 0.5);
-    z-index: 1000;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .camera-window {
     width: 640px;
     height: 480px;
     border: 5px solid rgba(0, 0, 0, 0.5);
-    z-index: 1000;
+}
+
+button{
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 1.05rem;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 4px 6px rgba(124, 92, 255, 0.4);
+}
+
+button:hover{
+  background: #5a43cc;
+  box-shadow: 0 6px 8px rgba(90, 67, 204, 0.4);
+  transform: translateY(-1px);
 }

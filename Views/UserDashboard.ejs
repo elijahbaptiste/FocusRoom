@@ -11,7 +11,8 @@
 <body>
     <div class="page-layout">
         <h1 class="page-title">Welcome to the User Dashboard</h1>
-        <img class="user-avatar" id="avatar" alt="Default Profile Icon by Vecteezy" src="../Assets/20171206_01.jpg"></img>
+        <img class="user-avatar" id="avatar" alt="Default Profile Icon by Vecteezy"
+            src="../Assets/20171206_01.jpg"></img>
         <h4 id="Spotify Username">No Display Name</h4>
         <button id="spotify-login-btn" style="display: block;">Login with Spotify</button>
         <button id="start-session-btn" style="display: none;" onclick="location.href='/main'">Start A Session</button>
@@ -21,44 +22,52 @@
 
 <script type="module">
     const clientId = "<%= process.env.SPOTIFY_CLIENT_ID %>";
-    const redirectUri = "http://127.0.0.1:3000/callback";
+    const redirectUri = `${window.location.origin}/callback`;
+    const VERIFIER_KEY = "spotify_pkce_verifier";
+    const STATE_KEY = "spotify_pkce_state";
 
-     function generateCodeVerifier() {
-        const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        const values = crypto.getRandomValues(new Uint8Array(64));
-        return values.reduce((acc, x) => acc + possible[x % possible.length], "");
-    }    
-    
-    const sha256 = async (plain) => {
-        const encoder = new TextEncoder()
-        const data = encoder.encode(plain)
-        return window.crypto.subtle.digest('SHA-256', data)
+    console.log("Origin:", window.location.origin);
+    console.log("Using redirectUri:", redirectUri);
+
+    // --- Utilities ---
+    function generateRandomString(len = 64) {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        const bytes = crypto.getRandomValues(new Uint8Array(len));
+        return Array.from(bytes, b => chars[b % chars.length]).join("");
     }
 
-    const base64urlencode = (input) => {
-        return btoa(String.fromCharCode.apply(null, new Uint8Array(input))
-            .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''));
+    async function sha256(input) {
+        const data = new TextEncoder().encode(input);
+        return crypto.subtle.digest("SHA-256", data);
     }
 
-   async function generateCodeChallenge(codeVerifier) {
-        const data = new TextEncoder().encode(codeVerifier);
-        const digest = await crypto.subtle.digest('SHA-256', data);
-        return btoa(String.fromCharCode(...new Uint8Array(digest)))
-            .replace(/\+/g, '-')
-            .replace(/\//g, '_')
-            .replace(/=+$/, '');
+    function base64urlencode(buffer) {
+        const bytes = new Uint8Array(buffer);
+        let str = "";
+        for (let i = 0; i < bytes.length; i++) str += String.fromCharCode(bytes[i]);
+        return btoa(str).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
     }
 
-     
+    async function codeChallengeFromVerifier(verifier) {
+        const digest = await sha256(verifier);
+        return base64urlencode(digest);
+    }
 
+    // --- Start login (only from button) ---
     async function redirectToAuthCodeFlow() {
-const verifier = await base64urlencode(generateCodeVerifier(50));
-        console.log("Generated verifier:", verifier);
-        localStorage.setItem("verifier", verifier);
-        const hashed = await sha256(verifier);
-        const challenge = await base64urlencode(hashed);
-        console.log("Generated challenge:", challenge);
-        
+        // fresh verifier & state for this attempt
+        const verifier = generateRandomString(64);
+        const state = generateRandomString(32);
+
+        // store BEFORE redirect (synchronous)
+        localStorage.setItem(VERIFIER_KEY, verifier);
+        sessionStorage.setItem(STATE_KEY, state);
+
+        console.log("Saved verifier (length):", verifier.length);
+        console.log("Saved state:", state);
+
+        const challenge = await codeChallengeFromVerifier(verifier);
+        console.log("Generated challenge (first 10):", challenge.slice(0, 10));
 
         const params = new URLSearchParams({
             client_id: clientId,
@@ -66,89 +75,103 @@ const verifier = await base64urlencode(generateCodeVerifier(50));
             redirect_uri: redirectUri,
             scope: "streaming user-read-email user-read-private user-read-playback-state user-modify-playback-state",
             code_challenge_method: "S256",
-            code_challenge: challenge
+            code_challenge: challenge,
+            state
         });
-        console.log("Redirecting to Spotify with params:", params.toString());
+
         window.location.href = `https://accounts.spotify.com/authorize?${params.toString()}`;
     }
 
-    // Auto-start PKCE flow if URL has ?code=
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
-    console.log("URL code parameter:", code);
+    // --- Handle callback ---
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get("code");
+    const returnedState = urlParams.get("state");
+
     if (!code) {
+        // No code yet → show login button
         document.getElementById("spotify-login-btn").style.display = "block";
         document.getElementById("spotify-login-btn").addEventListener("click", redirectToAuthCodeFlow);
     } else {
-        document.getElementById("spotify-login-btn").style.display = "none";
-        document.getElementById("start-session-btn").style.display = "block";
-        getAccessToken(code).then(token => {
-            fetchProfile(token).then(profile => {
+        // Validate state (protects against CSRF/misaligned tabs)
+        const expectedState = sessionStorage.getItem(STATE_KEY);
+        if (!expectedState || expectedState !== returnedState) {
+            console.error("State mismatch or missing. expected:", expectedState, " got:", returnedState);
+            alert("Login state mismatch. Please try logging in again from the same tab/host.");
+        } else {
+            sessionStorage.removeItem(STATE_KEY);
+            document.getElementById("spotify-login-btn").style.display = "none";
+            document.getElementById("start-session-btn").style.display = "block";
+            const token = await getAccessToken(code);
+            if (token) {
+                const profile = await fetchProfile(token);
                 populateUI(profile);
-            });
-        });
+                localStorage.removeItem(VERIFIER_KEY);
+            }
+        }
     }
 
+    // --- Exchange code for token ---
     async function getAccessToken(code) {
-        const verifier = localStorage.getItem("verifier");
-        console.log("Loaded verifier:", verifier);
-        console.log("Authorization code:", code);
-        console.log("Client ID:", clientId);
-        console.log("Redirect URI:", redirectUri);
-        if (!verifier) alert("Verifier missing from localStorage!");
+        const verifier = localStorage.getItem(VERIFIER_KEY);
+        console.log("Loaded verifier exists?", Boolean(verifier), " length:", verifier?.length || 0);
 
-        const params = new URLSearchParams({
+        if (!verifier) {
+            alert(
+                "Verifier missing. Make sure the host in your address bar matches the one you started on (e.g., all 'localhost' or all '127.0.0.1')."
+            );
+            return null;
+        }
+
+        const form = new URLSearchParams({
             client_id: clientId,
             grant_type: "authorization_code",
-            code: code,
+            code,
             redirect_uri: redirectUri,
             code_verifier: verifier
         });
 
-        console.log("=== EXACT PARAMETERS BEING SENT ===");
-        for (let [key, value] of params) {
-            console.log(`${key}: "${value}"`);
-        }
+        console.log("=== TOKEN REQUEST PARAM SUMMARY ===");
+        for (const [k, v] of form) console.log(k + ":", JSON.stringify(v));
 
-        const result = await fetch("https://accounts.spotify.com/api/token", {
+        const res = await fetch("https://accounts.spotify.com/api/token", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: params
+            body: form
         });
 
-        const data = await result.json();
+        const data = await res.json();
         console.log("Token response:", data);
-        if (!result.ok) {
+
+        if (!res.ok) {
             console.error("Token request failed:", data);
             alert("Failed to get Spotify access token. Check console.");
             return null;
         }
+
         localStorage.setItem("access_token", data.access_token);
-        console.log("Access token:", data.access_token);
         return data.access_token;
     }
 
+    // --- Fetch profile & update UI ---
     async function fetchProfile(token) {
-        const result = await fetch("https://api.spotify.com/v1/me", {
+        const res = await fetch("https://api.spotify.com/v1/me", {
             headers: { Authorization: `Bearer ${token}` }
         });
-        if (!result.ok) {
-            console.error("Failed to fetch profile:", await result.text());
+        if (!res.ok) {
+            console.error("Failed to fetch profile:", await res.text());
             alert("Failed to fetch Spotify profile. Check console.");
             return {};
         }
-        //localStorage.removeItem("verifier");
-        return await result.json();
+        return res.json();
     }
 
     function populateUI(profile) {
         const displayName = profile.display_name || "No Display Name";
         document.getElementById("Spotify Username").innerText = displayName;
         if (profile.images && profile.images.length > 0) {
-            const profileImage = new Image(200, 200);
-            profileImage.src = profile.images[0].url;
-            document.getElementById("avatar").src = profileImage.src;
+            document.getElementById("avatar").src = profile.images[0].url;
         }
     }
 </script>
+
 </html>
