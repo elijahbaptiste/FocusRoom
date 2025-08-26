@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { EventEmitter } from 'events';
-EventEmitter.defaultMaxListeners = 20;  // Or higher if needed
+EventEmitter.defaultMaxListeners = 20;
 
 dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
@@ -19,8 +19,6 @@ app.use('/Assets', express.static(path.join(__dirname, '../Assets')));
 app.set('views', path.join(__dirname, '../Views'));
 app.use(express.urlencoded({ extended: false }));
 
-
-// // Using environment variables for database connection
 var connection = mysql.createConnection({
   host: process.env.DATABASE_HOST,
   user: process.env.DATABASE_USERNAME,
@@ -39,7 +37,6 @@ connection.connect((err) => {
 
 });
 
-//Prepared SQL queries
 const AddUser = 'INSERT INTO users (Username, password, email, SpotifyUserID) VALUES (?, ?, ?, ?)';
 const FindUser = 'SELECT * FROM users WHERE Username = ?';
 
@@ -67,11 +64,9 @@ app.get('/callback', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-  // Handle login logic here
   const username = req.body.username;
   const password = req.body.password;
   console.log(`Username: ${username}, Password: ${password}`);
-
 
   connection.query(FindUser, [username], (error, results) => {
     if (error) {
@@ -81,7 +76,6 @@ app.post('/login', (req, res) => {
 
     if (results.length > 0) {
       console.log('User found:', results[0]);
-      // User exists, proceed to dashboard
       bcrypt.compare(password, results[0].password, (err, isMatch) => {
         if (err) {
           console.error('Error comparing passwords:', err);
@@ -96,14 +90,12 @@ app.post('/login', (req, res) => {
       });
     } else {
       console.log('No user found with the provided credentials.');
-      // User not found, redirect to login with an error message
       return res.redirect('/login');
     }
   });
 });
 
 app.post('/signup', async (req, res) => {
-  // Handle registration logic here
   const username = req.body.username;
   const password = req.body.password;
   const email = req.body.email;
@@ -118,7 +110,6 @@ app.post('/signup', async (req, res) => {
     }
     if (results.length > 0) {
       console.log('User found:', results[0]);
-      // User exists
       console.log('User already exists, redirecting to login.');
       return res.redirect('/login');
     }
@@ -136,12 +127,9 @@ app.post('/signup', async (req, res) => {
         return res.status(500).send('Internal Server Error');
       }
       console.log('User registered successfully:', results);
-      // User registered successfully, redirect to login
       return res.redirect('/login');
     });
   });
 });
-
-// connection.end();
 
 app.listen(3000);

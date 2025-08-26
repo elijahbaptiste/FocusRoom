@@ -5,10 +5,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/Styles/ListeningPage.css">
-    <title>Document</title>
+    <title>Listening Page</title>
 </head>
 
 <body>
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
+    <script>
+        window.onSpotifyWebPlaybackSDKReady = () => {
+            const token = localStorage.getItem('access_token');
+            const player = new Spotify.Player({
+                name: 'Web Playback SDK Quick Start Player',
+                getOAuthToken: cb => { cb(token); },
+                volume: 0.5
+            });
+
+            // Ready
+            player.addListener('ready', ({ device_id }) => {
+                console.log('Ready with Device ID', device_id);
+            });
+
+            // Not Ready
+            player.addListener('not_ready', ({ device_id }) => {
+                console.log('Device ID has gone offline', device_id);
+            });
+
+            player.addListener('initialization_error', ({ message }) => {
+                console.error(message);
+            });
+
+            player.addListener('authentication_error', ({ message }) => {
+                console.error(message);
+            });
+
+            player.addListener('account_error', ({ message }) => {
+                console.error(message);
+            });
+
+            document.getElementById('togglePlay').onclick = function () {
+                player.togglePlay();
+            };
+
+            player.connect();
+        }
+    </script>
 
 
     <div class="main-container">
@@ -16,12 +55,12 @@
         <div class="camera-indicator">
             <p>This is where the eyeball gif will go</p>
         </div>
+        <button id="togglePlay">Toggle Play</button>
         <div class="camera-window">
             <!-- //<canvas id="webcam-canvas" width="640" height="480"></canvas> -->
             <video id="webcam" autoplay playsinline width: 640px; height: 480px; border: 2px solid #555; border-radius:
                 8px;></video>
         </div>
-
         <div class="footer">
             <h3>Powered By </h3>
             <img class="logo" src="../Assets/Spotify_Full_Logo_RGB_Green.png" href="https://open.spotify.com/" />
@@ -61,7 +100,7 @@
         startWebcam();
 
         // Capture and send frame every 2 seconds
-        setInterval(captureFrameAndSend, 100000);
+        setInterval(captureFrameAndSend, 1000);
     </script>
 
 </body>
