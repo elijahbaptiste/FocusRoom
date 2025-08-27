@@ -89,8 +89,7 @@ p {
   align-items: center;
   justify-content: space-between;
   width: min(1120px, 100% - 32px);
-  margin: 16px auto 0;
-  padding: 10px 14px;
+
   background: #937b63;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);

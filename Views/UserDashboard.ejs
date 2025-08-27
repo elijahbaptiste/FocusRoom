@@ -13,9 +13,21 @@
         <h1 class="page-title">Welcome to the User Dashboard</h1>
         <img class="user-avatar" id="avatar" alt="Default Profile Icon by Vecteezy"
             src="../Assets/20171206_01.jpg"></img>
-        <h4 id="Spotify Username">No Display Name</h4>
+        <h2 id="Spotify Username">No Display Name</h2>
+        <div class="profile-info">
+            <h3>Your Profile Information:</h3>
+            <p>This section is used to display additional user information fetched from Spotify API.</p>
+            <p>Total Session Time: </p>
+            <p>Songs Played: </p>
+            <p></p>
+            <p></p>
+        </div>
         <button id="spotify-login-btn" style="display: block;">Login with Spotify</button>
         <button id="start-session-btn" style="display: none;" onclick="location.href='/main'">Start A Session</button>
+
+
+
+
     </div>
 </body>
 
@@ -73,7 +85,7 @@
             client_id: clientId,
             response_type: "code",
             redirect_uri: redirectUri,
-            scope: "streaming user-read-email user-read-private user-read-playback-state user-modify-playback-state",
+            scope: "streaming user-read-email user-read-private user-read-playback-state user-modify-playback-state user-top-read",
             code_challenge_method: "S256",
             code_challenge: challenge,
             state
@@ -164,6 +176,29 @@
         }
         return res.json();
     }
+
+      async function fetchProfileInfo(token) {
+        const res = await fetch("https://api.spotify.com/v1/me/top/artists", {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res.ok) {
+            console.error("Failed to fetch profile:", await res.text());
+            alert("Failed to fetch Spotify profile. Check console.");
+            return {};
+        }
+
+        const res2 = await fetch("https://api.spotify.com/v1/me/top/tracks", {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res2.ok) {
+            console.error("Failed to fetch profile:", await res.text());
+            alert("Failed to fetch Spotify profile. Check console.");
+            return {};
+        }
+        data = res2.json() + res.json();
+        return res.json();
+    }
+
 
     function populateUI(profile) {
         const displayName = profile.display_name || "No Display Name";

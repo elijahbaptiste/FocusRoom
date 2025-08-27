@@ -13,6 +13,7 @@
     <script>
         window.onSpotifyWebPlaybackSDKReady = () => {
             const token = localStorage.getItem('access_token');
+            debug.log("Retrieved token from localStorage:", token);
             const player = new Spotify.Player({
                 name: 'Web Playback SDK Quick Start Player',
                 getOAuthToken: cb => { cb(token); },
@@ -59,9 +60,10 @@
         <div class="camera-window">
             <!-- //<canvas id="webcam-canvas" width="640" height="480"></canvas> -->
             <video id="webcam" autoplay playsinline width: 640px; height: 480px; border: 2px solid #555; border-radius:
-                8px;></video> 
+                8px;></video>
         </div>
-         <button id="togglePlay">Toggle Play</button>
+        <h3 id="emotion-label"> Detected Emotion: </h3>
+        <button id="togglePlay">Toggle Play</button>
         <div class="footer">
             <h3>Powered By </h3>
             <img class="logo" src="../Assets/Spotify_Full_Logo_RGB_Green.png" href="https://open.spotify.com/" />
@@ -71,13 +73,27 @@
 
     <script>
         const video = document.getElementById('webcam');
-
+        const label = document.getElementById('emotion-label');
         async function startWebcam() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 video.srcObject = stream;
             } catch (err) {
                 console.error('Error accessing webcam:', err);
+            }
+        }
+
+        async function fetchEmotion() {
+            try {
+                const response = await fetch('/emotion');
+                if (!response.ok)
+                    debug.log("Emotion fetch failed:", response.statusText);
+                const data = await response.json();
+               
+                label.innerText = "Detected Emotion: " + data.LatestEmotion;
+                //.innerText = `Detected Emotion: ${data.emotion}`;
+            } catch (err) {
+                console.error('Error fetching emotion:', err);
             }
         }
 
@@ -99,11 +115,10 @@
         }
 
         startWebcam();
-
-        // Capture and send frame every 2 seconds
-        setInterval(captureFrameAndSend, 1000);
+        setInterval(fetchEmotion, 1000);
+        // Capture and send frame every x seconds
+        // setInterval(captureFrameAndSend, 10000);
     </script>
-
 </body>
 
 </html>

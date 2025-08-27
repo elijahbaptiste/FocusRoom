@@ -6,6 +6,7 @@ import bcrypt from 'bcrypt';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { EventEmitter } from 'events';
+import { spawn } from 'child_process';
 EventEmitter.defaultMaxListeners = 20;
 
 dotenv.config();
@@ -40,6 +41,29 @@ connection.connect((err) => {
 const AddUser = 'INSERT INTO users (Username, password, email, SpotifyUserID) VALUES (?, ?, ?, ?)';
 const FindUser = 'SELECT * FROM users WHERE Username = ?';
 
+let LatestEmotion = "Neutral";
+const pyFace = spawn("python3", ['../PythonEmotionDetection/emotiondetect.py']);
+
+pyFace.stdout.on('data', (data) => {
+  const lines = data.toString().trim().split('\n');
+  for (const line of lines) {
+    try {
+      const parsedData = JSON.parse(line);
+      console.log(`Python Output: ${line}`);
+      LatestEmotion = parsedData;
+      console.log(`Latest Emotion Updated: ${LatestEmotion}`);
+    }
+    catch (error) {
+      console.error('Error parsing JSON from Python script:', error);
+    }
+  }
+});
+
+pyFace.stderr.on('data', (data) => {
+  console.error('Python Error: ', data.toString() );
+});
+
+
 app.get('/', (req, res) => {
   res.render('WelcomePage.ejs')
 });
@@ -59,6 +83,11 @@ app.get('/dashboard', (req, res) => {
 app.get('/main', (req, res) => {
   res.render('MainListeningPage.ejs')
 });
+
+app.get('/emotion', (req, res) => {
+  res.json({ LatestEmotion });
+});
+
 app.get('/callback', (req, res) => {
   res.render('UserDashboard.ejs');
 });
